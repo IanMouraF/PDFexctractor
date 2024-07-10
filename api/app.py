@@ -14,12 +14,16 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['EXTRACTED_FOLDER'], exist_ok=True)
 
 def sanitize_filename(filename):
-    # Substitui caracteres inválidos por um sublinhado
+    # Remove caracteres inválidos por sublinhados
     filename = re.sub(r'[\\/*?:"<>|]', "_", filename)
-    # Remove novas linhas e múltiplos espaços
-    filename = filename.replace("\n", " ").replace("\r", " ").strip()
+    # Remove caracteres especiais não-ASCII
+    filename = re.sub(r'[^\x00-\x7F]+', '', filename)
+    # Substitui múltiplos espaços por um único espaço
     filename = re.sub(r'\s+', ' ', filename)
+    # Remove espaços em branco no início e no fim
+    filename = filename.strip()
     return filename
+
 
 def extract_pages(input_pdf_path, output_dir):
     extracted_files = []
